@@ -1,0 +1,28 @@
+name: Oracle Free Tier Instance Creation
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  create-instance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Setup OCI config
+        run: |
+          mkdir -p ~/.oci
+          echo "${{ secrets.OCI_CONFIG }}" > oci_config
+          echo "${{ secrets.OCI_API_KEY }}" > oci_api_private_key.pem
+          chmod 600 oci_api_private_key.pem
+          sed -i 's|key_file=.*|key_file=/home/runner/work/oracle-freetier-instance-creation/oracle-freetier-instance-creation/oc
